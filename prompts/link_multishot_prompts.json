@@ -1,0 +1,137 @@
+[
+  {
+    "role": "user",
+    "content": "Sitio web base: https://innovatechcorp.com \nEnlaces encontrados (14 total):\n- https://innovatechcorp.com/\n- https://innovatechcorp.com/about\n- https://innovatechcorp.com/our-mission\n- https://innovatechcorp.com/careers\n- https://innovatechcorp.com/solutions/enterprise\n- https://innovatechcorp.com/privacy-policy\n- https://innovatechcorp.com/contact-us\n- https://innovatechcorp.com/blog/latest\n- https://innovatechcorp.com/customer-stories\n- https://innovatechcorp.com/login\n- https://innovatechcorp.com/jobs/data-scientist\n- https://innovatechcorp.com/en/terms\n- https://innovatechcorp.com/investor-relations\n- https://innovatechcorp.com/support\nSelecciona los enlaces mas relevantes y devuelve el JSON."
+  },
+  {
+    "role": "assistant",
+    "content": {
+      "links": [
+        {
+          "type": "about",
+          "url": "https://innovatechcorp.com/about",
+          "score": 95,
+          "rationale": "Página principal que describe la historia, valores y el equipo central de la compañía."
+        },
+        {
+          "type": "about",
+          "url": "https://innovatechcorp.com/our-mission",
+          "score": 88,
+          "rationale": "Detalla la misión y la visión estratégica, útil para la propuesta de valor."
+        },
+        {
+          "type": "careers",
+          "url": "https://innovatechcorp.com/careers",
+          "score": 90,
+          "rationale": "Portal de empleo, clave para la sección de Carreras y cultura laboral."
+        },
+        {
+          "type": "products_services",
+          "url": "https://innovatechcorp.com/solutions/enterprise",
+          "score": 75,
+          "rationale": "Describe las soluciones o servicios empresariales que ofrece la compañía."
+        },
+        {
+          "type": "customers",
+          "url": "https://innovatechcorp.com/customer-stories",
+          "score": 85,
+          "rationale": "Casos de éxito y referencias de clientes, importante para la sección de Clientes."
+        },
+        {
+          "type": "contact",
+          "url": "https://innovatechcorp.com/contact-us",
+          "score": 80,
+          "rationale": "Proporciona la información de contacto o un formulario directo."
+        }
+      ]
+    }
+  },
+  {
+    "role": "user",
+    "content": "Sitio web base: https://data-engineers.net \nEnlaces encontrados (10 total):\n- https://data-engineers.net/home\n- https://data-engineers.net/login-portal\n- https://data-engineers.net/services/data-migration\n- https://data-engineers.net/company\n- https://data-engineers.net/jobs\n- https://data-engineers.net/press-room\n- https://data-engineers.net/clients-list\n- https://data-engineers.net/blog/2023-summary\n- https://data-engineers.net/legal/cookies\n- https://data-engineers.net/faq\nSelecciona los enlaces mas relevantes y devuelve el JSON."
+  },
+  {
+    "role": "assistant",
+    "content": {
+      "links": [
+        {
+          "type": "about",
+          "url": "https://data-engineers.net/company",
+          "score": 92,
+          "rationale": "Detalla la historia, la filosofía y la cultura interna de la empresa."
+        },
+        {
+          "type": "products_services",
+          "url": "https://data-engineers.net/services/data-migration",
+          "score": 90,
+          "rationale": "Especifica los servicios de ingeniería de datos, central para la oferta de valor."
+        },
+        {
+          "type": "careers",
+          "url": "https://data-engineers.net/jobs",
+          "score": 85,
+          "rationale": "Página donde se publican las vacantes y se describe la cultura de trabajo, para la sección Carreras."
+        },
+        {
+          "type": "customers",
+          "url": "https://data-engineers.net/clients-list",
+          "score": 80,
+          "rationale": "Lista de clientes o ejemplos de proyectos realizados con socios."
+        }
+      ]
+    }
+  },
+  {
+    "role": "user",
+    "content": "Sitio web base: https://huggingface.co \nEnlaces encontrados (64 total):\n- https://huggingface.co/\n- https://huggingface.co/models\n- https://huggingface.co/datasets\n- https://huggingface.co/spaces\n- https://huggingface.co/docs\n- https://huggingface.co/enterprise\n- https://huggingface.co/pricing\n- https://huggingface.co/login\n- https://huggingface.co/join\n- https://huggingface.co/Tongyi-MAI/Z-Image-Turbo\n- https://huggingface.co/black-forest-labs/FLUX.2-dev\n- https://huggingface.co/tencent/HunyuanOCR\n- https://huggingface.co/deepseek-ai/DeepSeek-Math-V2\n- https://huggingface.co/facebook/sam3\n- https://huggingface.co/spaces/Tongyi-MAI/Z-Image-Turbo\n- https://huggingface.co/spaces/black-forest-labs/FLUX.2-dev\n- https://huggingface.co/spaces/linoyts/Qwen-Image-Edit-Angles\n- https://huggingface.co/spaces/dream2589632147/Dream-wan2-2-faster-Pro\n- https://huggingface.co/spaces/HuggingFaceTB/smol-training-playbook\n- https://huggingface.co/datasets/nvidia/PhysicalAI-Autonomous-Vehicles\n- https://huggingface.co/datasets/opendatalab/AICC\n- https://huggingface.co/datasets/nex-agi/agent-sft\n- https://huggingface.co/datasets/ytz20/LMSYS-Chat-GPT-5-Chat-Response\n- https://huggingface.co/datasets/dolly-vn/dolly-audio-1000h-vietnamese\n- https://huggingface.co/inference/models\n- https://huggingface.co/pricing#endpoints\n- https://huggingface.co/pricing#spaces\n- https://huggingface.co/allenai\n- https://huggingface.co/facebook\n- https://huggingface.co/amazon\n- https://huggingface.co/google\n- https://huggingface.co/Intel\n- https://huggingface.co/microsoft\n- https://huggingface.co/grammarly\n- https://huggingface.co/Writer\n- https://huggingface.co/docs/transformers\n- https://huggingface.co/docs/diffusers\n- https://huggingface.co/docs/safetensors\n- https://huggingface.co/docs/huggingface_hub\n- https://huggingface.co/docs/tokenizers\n- https://huggingface.co/docs/trl\n- https://huggingface.co/docs/transformers.js\n- https://huggingface.co/docs/smolagents\n- https://huggingface.co/docs/peft\n- https://huggingface.co/docs/datasets\n- https://huggingface.co/docs/text-generation-inference\n- https://huggingface.co/docs/accelerate\n- https://huggingface.co/changelog\n- https://endpoints.huggingface.co\n- https://huggingface.co/chat\n- https://huggingface.co/huggingface\n- https://huggingface.co/brand\n- https://huggingface.co/terms-of-service\n- https://huggingface.co/privacy\n- https://apply.workable.com/huggingface/\n- mailto:press@huggingface.co\n- https://huggingface.co/learn\n- https://huggingface.co/blog\n- https://discuss.huggingface.co\n- https://status.huggingface.co/\n- https://github.com/huggingface\n- https://twitter.com/huggingface\n- https://www.linkedin.com/company/huggingface/\n- https://huggingface.co/join/discord\nSelecciona los enlaces mas relevantes y devuelve el JSON."
+  },
+  {
+    "role": "assistant",
+    "content": {
+      "links": [
+        {
+          "type": "about",
+          "url": "https://huggingface.co/",
+          "score": 95,
+          "rationale": "La página de inicio contiene el resumen y la propuesta de valor de la empresa, siendo el punto de partida principal."
+        },
+        {
+          "type": "products_services",
+          "url": "https://huggingface.co/models",
+          "score": 98,
+          "rationale": "El catálogo principal de modelos de ML es la oferta central de Hugging Face."
+        },
+        {
+          "type": "products_services",
+          "url": "https://huggingface.co/datasets",
+          "score": 95,
+          "rationale": "El repositorio de conjuntos de datos es fundamental para su ecosistema de productos."
+        },
+        {
+          "type": "products_services",
+          "url": "https://huggingface.co/spaces",
+          "score": 90,
+          "rationale": "Plataforma de despliegue de aplicaciones y demos, clave en la sección de servicios."
+        },
+        {
+          "type": "customers",
+          "url": "https://huggingface.co/enterprise",
+          "score": 85,
+          "rationale": "Página centrada en soluciones para clientes y socios empresariales."
+        },
+        {
+          "type": "careers",
+          "url": "https://apply.workable.com/huggingface/",
+          "score": 92,
+          "rationale": "El portal de empleos externo, pero directamente vinculado, es necesario para la sección Carreras."
+        },
+        {
+          "type": "culture",
+          "url": "https://huggingface.co/docs",
+          "score": 75,
+          "rationale": "La documentación extensa demuestra la cultura de código abierto y colaboración de la compañía."
+        }
+      ]
+    }
+  }
+]
