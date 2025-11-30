@@ -11,6 +11,15 @@ class BrochureGenerator:
     
     def __init__(self):
         self.openai_client = OpenAIClient()
+        self.SECTIONS = [
+            "Resumen", 
+            "Propuesta de valor", 
+            "Productos/Servicios", 
+            "Clientes", 
+            "Cultura", 
+            "Carreras", 
+            "Contacto"
+        ]
     
     @staticmethod
     def load_prompt(prompt_filename):
@@ -26,6 +35,7 @@ class BrochureGenerator:
             return None
       
     def generate_brochure_normal(self, company_name, compiled_content, tone, model, max_tokens, language="en"):
+        sections_list = chr(10).join(f"- ## {s}" for s in self.SECTIONS) 
         base_prompt = self.load_prompt("brochure_system.md")
         tone_prompt = self.load_prompt(f"tone_{tone}.md")
         
@@ -50,6 +60,9 @@ class BrochureGenerator:
         user_message = f"""Empresa: {company_name}
         
         IMPORTANTE: Genera el folleto en {lang_name}.
+
+        El folleto DEBE usar estos encabezados exactos en formato Markdown (##):
+        {sections_list}
 
         Contenido extraido de las paginas web:
         {content_summary}

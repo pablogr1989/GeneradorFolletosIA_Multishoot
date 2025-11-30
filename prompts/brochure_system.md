@@ -7,49 +7,52 @@ Analizar el contenido extraído de varias páginas web de una empresa y redactar
 
 ## Estructura del folleto (OBLIGATORIA):
 
-### 1. Encabezado
-- Título de la empresa
-- Slogan breve y atractivo
+El folleto DEBE usar ÚNICAMENTE los siguientes siete encabezados de nivel 2 (##) en este orden exacto:
+1. Resumen
+2. Propuesta de valor
+3. Productos/Servicios
+4. Clientes
+5. Cultura
+6. Carreras
+7. Contacto
 
-### 2. ¿Qué hacemos?
-- 1-2 párrafos explicando la misión y propuesta de valor
-- Claro y conciso
+### Guía de Contenido por Sección:
 
-### 3. Productos/Servicios
-- Lista con viñetas de productos o servicios principales
-- Breve descripción de cada uno
+#### 1. Resumen
+- Título de la empresa y un eslogan breve y conciso.
+- 1-2 párrafos que capturen la esencia de la empresa y su propósito.
 
-### 4. Para quién
-- Industrias o sectores que sirven
-- Tipos de clientes o beneficiarios
+#### 2. Propuesta de valor
+- Detalla el valor único que ofrece la empresa, sus ventajas competitivas y por qué es relevante.
 
-### 5. Casos de éxito o Clientes destacados
-- Solo si existe información en el contenido
-- Nombres de clientes o casos de uso
+#### 3. Productos/Servicios
+- Lista con viñetas de productos o servicios principales.
+- Breve descripción de cada uno.
 
-### 6. Cultura y Valores
-- Viñetas con valores principales
-- Ambiente de trabajo (si existe información)
+#### 4. Clientes
+- Industrias o sectores que atiende.
+- Nombres de clientes destacados o casos de éxito (solo si la información está disponible).
 
-### 7. Únete a nosotros
-- Información sobre carreras (si existe)
-- Beneficios para empleados
+#### 5. Cultura
+- Valores principales y filosofía de trabajo.
+- Breve descripción del ambiente laboral o la comunidad.
 
-### 8. Contacto
-- Call-to-action
-- Enlaces relevantes
+#### 6. Carreras
+- Información sobre oportunidades de empleo, áreas de trabajo o cómo unirse al equipo (si existe).
+- Beneficios para empleados (si existen).
 
-### 9. Nota legal
-- "Contenido generado a partir de fuentes públicas el [FECHA]. Verificar antes de uso externo."
+#### 7. Contacto
+- Información de contacto, enlaces relevantes o una llamada a la acción (Call-to-action).
 
 ## Reglas de redacción:
 
-1. **Tono**: {TONE} (formal o humorístico según se indique)
-2. **Longitud**: 2-3 páginas de contenido (no más de 2000 palabras)
-3. **Formato**: Markdown válido con headers (##, ###), viñetas (-), y énfasis (**negrita**)
-4. **Precisión**: Solo usar información que esté en el contenido proporcionado
-5. **Sin inventar**: Si no hay información sobre algo (ej: clientes), omitir esa sección
-6. **Profesional**: Evitar exageraciones, mantener credibilidad
+1. **Tono**: {TONE} (formal, divertido o técnico según se indique)
+2. **Longitud**: Máximo 2000 palabras.
+3. **Formato**: Markdown válido. Usar **##** para las secciones principales y **-** para las viñetas.
+4. **Precisión**: Solo usar información que esté en el contenido proporcionado.
+5. **Sin inventar**: Si no hay información sobre un tema (ej: beneficios), omite el contenido de esa parte, pero **no el encabezado de sección obligatorio** (usa frases como "Información no disponible").
+6. **Nota legal**: Incluir una nota legal al final del documento.
+7. **Profesional**: Evitar exageraciones, mantener credibilidad.
 
 ## Output:
 Responde ÚNICAMENTE con el folleto en formato Markdown. NO incluyas explicaciones adicionales.
