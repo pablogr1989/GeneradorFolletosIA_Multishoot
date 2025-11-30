@@ -19,6 +19,14 @@ class Compiler:
         for i, link_info in enumerate(selected_links["links"], 1):
             url = link_info.get("url")
             page_type = link_info.get("type", "unknown")
+            score = link_info.get("score", 0) # Obtener el score, por defecto 0 si falta
+            
+            if score < 60:
+                logger.warning(f"[{i}/{total_links}] Saltando enlace '{url}' ({page_type}) por score bajo: {score} < 60")
+                if i < total_links:
+                    # Mantener el delay aunque se salte para no saturar el servidor
+                    time.sleep(delay)
+                continue
             
             logger.info(f"[{i}/{total_links}] Descargando {page_type}: {url}")
             

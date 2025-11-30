@@ -97,12 +97,18 @@ class LinkSelector:
             
             # Intentar hasta 3 veces si falla el parseo
             for attempt in range(1, 4):
+                
                 result = self.openai_client.call_openai(
                     messages=messages,
                     model=model,
                     max_tokens=max_tokens,
                     temperature=0.3
                 )
+                
+                # Verificar si call_openai devolvió un error irrecuperable
+                if result.get("response") == "Error irrecuperable":
+                    logger.error("Error irrecuperable de la API en call_openai.")
+                    return {"links": []}
                 
                 response_text = result["response"].strip()
                 
