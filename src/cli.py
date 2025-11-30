@@ -1,5 +1,6 @@
 import sys
 import time
+from datetime import datetime
 from core import scraping, link_selector, compiler, brochure
 from utils.utils import *
 from utils.args_manager import args_manager
@@ -97,36 +98,54 @@ def run_mock_mode(tone):
     
     return consolidated_content
 
-def write_brochure(brochure_content, formats):
+def write_brochure(brochure_content, formats, suffix=""):
     start = time.time()
     if brochure_content:
-        save_md_with_timestamp(brochure_content, "brochure")
+        filename = f"brochure{suffix}"
+        save_md_with_timestamp(brochure_content, filename)
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
         if 'html' in formats:            
-            markdown_to_html(brochure_content, f"{timestamp}_brochure.html")
+            markdown_to_html(brochure_content, f"{timestamp}_{filename}.html")
         
         if 'pdf' in formats:            
-            markdown_to_pdf(brochure_content, f"{timestamp}_brochure.html", f"{timestamp}_brochure.pdf")
+            markdown_to_pdf(brochure_content, f"{timestamp}_{filename}.html", f"{timestamp}_{filename}.pdf")
     else:
-        logger.error("Error al generar el folleto")
-    metrics_tracker.record_stage(f"Exportar folleto a {formats} ", time.time() - start)
+        logger.error(f"Error al generar el folleto {suffix}")
+    metrics_tracker.record_stage(f"Exportar folleto {suffix}", time.time() - start)
 
-def run_generate_brochure(company_name, consolidated_content, tone, detected_lang, formats):    
+def run_generate_brochure(company_name, consolidated_content, tone, detected_lang, target_language, formats):    
     #########################################################################
     #                 PASO 5 - GENERAR FOLLETO CORPORATIVO                  #
     #########################################################################
-    logger.info(f"\nPASO 5: Generando folleto corporativo con IA...")
+    logger.info(f"\nPASO 5: Generando folleto corporativo (Origen: {detected_lang})...")
     brochure_content = brochure.generate_brochure(
         company_name=company_name,
         compiled_content=consolidated_content,
         tone=tone,
         model="gpt-4o-mini",
-        language=detected_lang
+        language=detected_lang # Generamos en el idioma fuente primero
     )
     
-    write_brochure(brochure_content, formats)
+    # Guardar original
+    write_brochure(brochure_content, formats, suffix="_original")
+
+    #########################################################################
+    #                 PASO 6 - TRADUCCIÓN AUTOMÁTICA             #
+    #########################################################################
+    # Si el idioma destino es diferente al origen, traducimos
+    if brochure_content and target_language != detected_lang:
+        logger.info(f"\nPASO 6: Traduciendo folleto a {target_language}...")
+        translated_content = brochure.translate_brochure(
+            brochure_text=brochure_content,
+            target_language=target_language,
+            model="gpt-4o-mini"
+        )
+        # Guardar traducido
+        write_brochure(translated_content, formats, suffix=f"_{target_language}")
+    else:
+        logger.info(f"\nPASO 6: Omitiendo traducción debido a que el idioma de la web es la misma que el lenguaje introducido")
     
 
 def main():
@@ -138,31 +157,36 @@ def main():
     test_url = args_manager.get('url')
     tone = args_manager.get('tone')
     formats = args_manager.get('format')
-    language = args_manager.get('language')
-
-    test_url = "https://huggingface.co"       
+    target_language = args_manager.get('language')
     
+    if not target_language:
+        target_language = "es"  # Idioma por defecto
+        logger.info(f"Nota: No se especificó idioma destino (--language). Usando '{target_language}' por defecto.")
+        
+    if not test_url:
+        test_url = "https://huggingface.co"
+        logger.info(f"Nota: No se especificó url en los argumentos, utilizando url por defecto {test_url}")
+        
     logger.info("=" * 60)
     logger.info("GENERADOR DE FOLLETOS CORPORATIVOS CON IA")
     logger.info("=" * 60)
     logger.info(f"\nEmpresa: {company_name}")
     logger.info(f"URL a analizar: {test_url}")
-    logger.info(f"Tono: {tone}\n")
+    logger.info(f"Tono: {tone}")
+    logger.info(f"Idioma destino: {target_language}\n")
     
     if openai_client.mock_mode:
         consolidated_content = run_mock_mode(tone)
-        detected_lang = "en"
+        detected_lang = "en" # Asumimos inglés para el mock
     else:
         consolidated_content, detected_lang = run_normal_mode(test_url)       
         
     if not consolidated_content:
         logger.error("No se pudo obtener contenido compilado")
         sys.exit(1)
-        
-    if is_language_supported(language):
-        detected_lang = language        
     
-    run_generate_brochure(company_name, consolidated_content, tone, detected_lang, formats)       
+    # Llamamos al flujo de generación y traducción
+    run_generate_brochure(company_name, consolidated_content, tone, detected_lang, target_language, formats)       
     
     logger.info("\n" + "=" * 60)
     logger.info("Proceso completado")
