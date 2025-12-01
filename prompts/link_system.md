@@ -26,8 +26,8 @@ Responde ÚNICAMENTE con un objeto JSON válido con esta estructura:
 ```json
 {
   "links": [
-    {"type": "about page", "url": "https://ejemplo.com/about"},
-    {"type": "careers page", "url": "https://ejemplo.com/careers"}
+    {"type": "about page", "url": "https://ejemplo.com/about", "score": 90, "rationale" : "La página de inicio contiene el resumen y la propuesta de valor de la empresa, siendo el punto de partida principal."},
+    {"type": "careers page", "url": "https://ejemplo.com/careers", "score" : 85, "rationale" : "Página donde se publican las vacantes y se describe la cultura de trabajo, para la sección Carreras."}
   ]
 }
 ```

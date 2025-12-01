@@ -52,6 +52,17 @@ def save_md_with_timestamp(data, filename_prefix):
         logger.info(f"\nFolleto guardado en: {brochure_file}")
     except Exception as e:
         logger.info(f"No se pudo guardar el folleto: {e}")
+        
+def save_md(data, filename):      
+    brochure_file = get_outputs_path(f"{filename}.md")
+    try:
+        with open(brochure_file, 'w', encoding='utf-8', errors='replace') as f:
+            f.write(data)
+        logger.info(f"\nFolleto guardado en: {brochure_file}")
+        return brochure_file
+    except Exception as e:
+        logger.info(f"No se pudo guardar el folleto: {e}")
+        return None
 
 
 def display_selected_links(selected_links):

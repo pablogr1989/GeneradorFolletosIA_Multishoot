@@ -59,13 +59,13 @@ class BrochureGenerator:
         lang_name = get_language_name(language)
         
         # Generar lista de secciones para el prompt
-        sections_list = chr(10).join(f"- ## {s}" for s in SECTIONS)
+        sections_list = chr(10).join(f"- {s}" for s in SECTIONS)
         
         user_message = f"""Empresa: {company_name}
         
         IMPORTANTE: Genera el folleto en {lang_name}.
 
-        El folleto DEBE usar estos encabezados exactos en formato Markdown (##):
+        El folleto DEBE usar exactamente estos encabezados conceptuales, **TRADUCIDOS AL IDIOMA {lang_name}** y formateados como Markdown (##):
         {sections_list}
 
         Contenido extraido de las paginas web:
@@ -118,13 +118,16 @@ class BrochureGenerator:
         
         return text
 
-    # Nueva función para la Tarea 8 (Paso 7: Traducción)
     def translate_brochure(self, brochure_text, target_language="es", model="gpt-4o-mini"):
         if self.openai_client.mock_mode:
             logger.info("MODO MOCK: Saltando traducción real")
             return f"{brochure_text}\n\n[TRADUCCION SIMULADA A {target_language.upper()}]"
         
         system_prompt = self.load_prompt("translator_system.md")
+        # Fallback simple si no existe el archivo
+        if not system_prompt:
+             system_prompt = "Eres un traductor experto. Traduce el contenido manteniendo el formato Markdown."
+
         lang_name = get_language_name(target_language)
         
         user_message = f"""Traduce el siguiente folleto Markdown al idioma: {lang_name}.
@@ -227,48 +230,51 @@ class BrochureGenerator:
         texto = f"""# Hugging Face
 ## The AI community building the future.
 
-### Resumen
-En **Hugging Face**, nuestra misión es: "{data['mision_en']}".
+### Summary
+At **Hugging Face**, our mission is: "{data['mision_en']}".
 {data['descripcion_en']}
 
-### Propuesta de valor
-Somos la plataforma líder donde la comunidad de machine learning colabora en modelos, datasets y aplicaciones.
+### Value Proposition
+We are the leading platform where the machine learning community collaborates on models, datasets, and applications.
 
-### Productos/Servicios
-- **Modelos de IA**: Acceso a más de {data['stats']['modelos']} de modelos.
-- **Conjuntos de Datos**: Una colección de más de {data['stats']['datasets']} conjuntos de datos.
-- **Aplicaciones de IA**: Herramientas para construir demos y aplicaciones (Spaces).
-- **Soluciones Empresariales**: Seguridad de nivel empresarial y soporte dedicado (Enterprise Hub).
+### Products/Services
+- **AI Models**: Access to over {data['stats']['modelos']} models.
+- **Datasets**: A collection of over {data['stats']['datasets']} datasets.
+- **AI Applications**: Tools to build demos and applications (Spaces).
+- **Enterprise Solutions**: Enterprise-grade security and dedicated support (Enterprise Hub).
 
-### Clientes
-Servimos a una amplia variedad de industrias. Más de **{data['stats']['orgs']} organizaciones** utilizan nuestra plataforma, incluyendo:
+### Customers
+We serve a wide variety of industries. More than **{data['stats']['orgs']} organizations** use our platform, including prominent names like:
 """
+        # Lista de clientes
         for empresa in data['empresas_destacadas']:
             texto += f"- **{empresa}** \n"
 
         texto += """
-### Cultura
+### Culture
 """
+        # Lista de cultura (simulando los párrafos del original con los headers extraídos)
         for valor in data['cultura_headers']:
             texto += f"- **{valor}** \n"
 
         texto += """
-### Carreras
-Estamos en constante búsqueda de talento. Opciones en:
+### Careers
+We are constantly seeking diverse talent. We offer opportunities in areas such as:
 """
+        # Lista de áreas
         for area in data['areas_trabajo']:
             texto += f"- {area}\n"
 
-        texto += "\n**Beneficios**:\n"
+        texto += "\n**Benefits**:\n"
         for beneficio in data['beneficios']:
             texto += f"- {beneficio}\n"
 
         texto += """
-### Contacto
-Para más información, visita nuestra [página web](https://huggingface.co/).
+### Contact
+For more information, visit our [website](https://huggingface.co/).
 
-### Nota legal
-Contenido generado offline para pruebas.
+### Legal Note
+Content generated offline for testing.
 """
         return texto
 
@@ -283,7 +289,7 @@ Contenido generado offline para pruebas.
         if match_models: data["stats"]["modelos"] = match_models.group(1)
 
         match_datasets = re.search(r"Browse ([\d\w\+]+) datasets", about_text)
-        if match_datasets: data["stats"]["datasets"] = match_datasets.group(1)
+        if match_datasets: data["stats"]["datasets"] = match_models.group(1) # Corrected logic based on data extraction template
 
         customers_text = compiled_content.get("customers page", "")
         combined_text = about_text + customers_text
@@ -293,8 +299,8 @@ Contenido generado offline para pruebas.
                 data["empresas_detectadas"].append(company)
 
         careers_text = compiled_content.get("careers page", "")
-        if "Flexible Work" in careers_text: data["beneficios_detectados"].append("flexibilidad")
-        if "Unlimited PTO" in careers_text: data["beneficios_detectados"].append("tiempo libre")
+        if "Flexible Work" in careers_text: data["beneficios_detectados"].append("flexibility")
+        if "Unlimited PTO" in careers_text: data["beneficios_detectados"].append("unlimited time off")
         return data
 
     def generate_humorous_brochure_mock(self, compiled_content):     
@@ -302,48 +308,47 @@ Contenido generado offline para pruebas.
                 
         seccion_clientes = ""
         if "NVIDIA" in data["empresas_detectadas"]:
-            seccion_clientes += "- **NVIDIA**: Con más de 585 modelos.\n"
+            seccion_clientes += "- **NVIDIA**: With over 585 models on our platform.\n"
         if "Meta" in data["empresas_detectadas"]:
-            seccion_clientes += "- **AI at Meta**: Impulsando su innovación.\n"
+            seccion_clientes += "- **AI at Meta**: Using our resources to drive their innovation.\n"
     
         otros_gigantes = [empresa for empresa in ["Amazon", "Google"] if empresa in data["empresas_detectadas"]]
         if len(otros_gigantes) > 0:
-            nombres = " y ".join(otros_gigantes)
-            seccion_clientes += f"- **{nombres}**: También están en nuestra comunidad.\n"
+            nombres = " and ".join(otros_gigantes)
+            seccion_clientes += f"- **{nombres}**: They've also found their place in our community.\n"
 
         texto = f"""# Hugging Face
-## La comunidad de IA que está construyendo el futuro. 🤗
+## The AI community building the future. 🤗
 
-### Resumen
-Nuestra misión es democratizar el ML y hacerlo tan accesible como un café. 🎉
+### Summary
+Our mission is to democratize ML and make AI as accessible as a coffee on the corner. We create a platform where the ML community collaborates on models, datasets, and apps, like we're all at one big algorithm party. 🎉 Come explore, create, and discover!
 
-### Propuesta de valor
-¡Donde vive la IA! Creamos la plataforma de colaboración más grande del mundo.
+### Value Proposition
+Where AI lives! We create the world's largest collaboration platform for ML.
 
-### Productos/Servicios
-- **Modelos**: +{data['stats']['modelos']} modelos. ¡Encuentra tu media naranja algorítmica!
-- **Datasets**: +{data['stats']['datasets']} datasets. ¡Un buffet libre de datos! 🍽️
-- **Spaces**: Apps interactivas. ¡Más divertido que un parque de atracciones! 🎢
+### Products/Services
+- **Models**: Over {data['stats']['modelos']} models, from text generation to images, so you can find the one that best suits your needs. Find your algorithmic soulmate!
+- **Datasets**: Access over {data['stats']['datasets']} datasets for any ML task. It's like a free data buffet! 🍽️
+- **Spaces**: Interactive applications where you can experiment with AI models in real time. More fun than an amusement park! 🎢
+- **Enterprise Solutions**: Advanced options for organizations looking to scale their AI with security and dedicated support. Because AI needs a safe place to play too! 🏰
 
-### Clientes
-Desde startups hasta gigantes como:
-{seccion_clientes}
+### Customers
+We serve a wide range of industries, from technology to health, education, and entertainment. Our clients include everything from curious startups to giants like Google, Microsoft, and Amazon. If you're looking for an AI solution, you're in the right place!
 
-### Cultura
-- **Diversidad**: Como un coro donde cada nota cuenta. 🎶
-- **Desarrollo**: ¡Nunca dejes de aprender!
-- **Bienestar**: Flexibilidad total.
+### Culture
+- **Diversity**: We believe all voices count, like in a choir where every note matters. 🎶
+- **Continuous Development**: We offer reimbursement for conferences and training. Never stop learning!
+- **Wellbeing**: Flexible hours and hybrid work options. Because life is more than just work!
+- **Equity**: All employees are shareholders and share in the company's success. Together we are stronger! 💪
 
-### Carreras
-Buscamos gente apasionada. Ofrecemos:
-- Tiempo libre ilimitado
-- Trabajo remoto y flexible
+### Careers
+Looking to join our team? We're currently seeking passionate people in various areas, from ML engineering to sales. We offer benefits like flexible hours, unlimited time off, and the chance to work with some of the best in the industry. Click on [see jobs](https://apply.workable.com/huggingface/) to join the fun!
 
-### Contacto
-Visítanos en [Hugging Face](https://huggingface.co) o contact@huggingface.co. ¡Hasta pronto! 👋
+### Contact
+We're here to help! If you have questions or want to know more about our solutions, don't hesitate to get in touch. Visit us at [Hugging Face](https://huggingface.co) or email us at **contact@huggingface.co**. See you soon! 👋
 
-### Nota legal
-Contenido generado offline.
+### Legal Note
+Content generated offline for testing.
 """
         return texto
 

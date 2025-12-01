@@ -1,6 +1,5 @@
 import argparse
 
-
 class ArgsManager:
     _instance = None
     _args = None
@@ -24,7 +23,10 @@ class ArgsManager:
                     choices=['md', 'html', 'pdf'], 
                     default=['md'], 
                     help='Formatos de salida (md, html, pdf)')
-        parser.add_argument('--model', type=str, default='gpt-4o-mini', help='Modelo de OpenAI a utilizar')
+        
+        parser.add_argument('--model_selector', type=str, default='gpt-4o-mini', help='Modelo para selección de enlaces (LLM 1)')
+        parser.add_argument('--model_writer', type=str, default='gpt-4o-mini', help='Modelo para redacción del folleto (LLM 2)')
+        parser.add_argument('--model_translator', type=str, default='gpt-4o-mini', help='Modelo para traducción (LLM 3)')
         
         self._args = parser.parse_args()
         return self._args
@@ -38,6 +40,5 @@ class ArgsManager:
         if self._args is None:
             self.parse_args()
         return vars(self._args)
-
 
 args_manager = ArgsManager()

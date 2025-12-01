@@ -20,8 +20,10 @@ def download_html(test_url):
     if cache_manager.is_cache_valid(test_url):
         age = cache_manager.get_cache_age(test_url)
         logger.info(f"\nSe encontro cache disponible (edad: {age})")
-        response = input("Usar cache para esta sesion? (s/n): ").lower().strip()
-        use_cache_decision = (response == 's')
+        # Automatización para pruebas: forzar uso de caché si existe
+        # response = input("Usar cache para esta sesion? (s/n): ").lower().strip()
+        # use_cache_decision = (response == 's')
+        use_cache_decision = True
     else:
         use_cache_decision = False
 
@@ -30,17 +32,18 @@ def download_html(test_url):
 
 def extract_and_clean_links(web_content):
     logger.info("\n- PASO 2: Extrayendo enlaces y limpiando contenido...")
-    [web_title, web_text, web_links] = scraping.Web.clean_text(web_content)  
+    [web_title, web_text, web_links] = scraping.Web.clean_text(web_content)   
     
     detected_lang = detect_language(web_text)
     lang_name = get_language_name(detected_lang)
     logger.info(f"Idioma de la web: {lang_name}")    
     return web_links, detected_lang
 
-def get_relevant_links(test_url, web_links):
-    logger.info(f"\n- PASO 3: Seleccionando enlaces relevantes con IA...")
+def get_relevant_links(test_url, web_links, model_selector):
+    logger.info(f"\n- PASO 3: Seleccionando enlaces relevantes con IA ({model_selector})...")
     selector = link_selector.LinkSelector()
-    selected_links = selector.select_relevant_links(test_url, web_links)    
+    # Pasamos el modelo dinámico
+    selected_links = selector.select_relevant_links(test_url, web_links, model=model_selector)    
     
     if not selected_links or not selected_links.get("links"):
         logger.error("\nNo se encontraron enlaces relevantes")
@@ -51,7 +54,7 @@ def get_relevant_links(test_url, web_links):
     return selected_links
     
 
-def run_normal_mode(test_url):    
+def run_normal_mode(test_url, model_selector):    
     #########################################################################
     #                         PASO 1 - DESCARGAR HTML                       #
     #########################################################################
@@ -68,7 +71,8 @@ def run_normal_mode(test_url):
     #                   PASO 3 - SELECCIONAR ENLACES CON IA                 #
     #########################################################################
     start = time.time()
-    selected_links = get_relevant_links(test_url, web_links)
+    # Usamos el modelo selector
+    selected_links = get_relevant_links(test_url, web_links, model_selector)
     metrics_tracker.record_stage("Seleccion de enlaces con IA", time.time() - start)
 
     #########################################################################
@@ -115,16 +119,16 @@ def write_brochure(brochure_content, formats, suffix=""):
         logger.error(f"Error al generar el folleto {suffix}")
     metrics_tracker.record_stage(f"Exportar folleto {suffix}", time.time() - start)
 
-def run_generate_brochure(company_name, consolidated_content, tone, detected_lang, target_language, formats):    
+def run_generate_brochure(company_name, consolidated_content, tone, detected_lang, target_language, formats, model_writer, model_translator):    
     #########################################################################
     #                 PASO 5 - GENERAR FOLLETO CORPORATIVO                  #
     #########################################################################
-    logger.info(f"\nPASO 5: Generando folleto corporativo (Origen: {detected_lang})...")
+    logger.info(f"\nPASO 5: Generando folleto corporativo (Origen: {detected_lang}) con {model_writer}...")
     brochure_content = brochure.generate_brochure(
         company_name=company_name,
         compiled_content=consolidated_content,
         tone=tone,
-        model="gpt-4o-mini",
+        model=model_writer, # Modelo dinámico
         language=detected_lang # Generamos en el idioma fuente primero
     )
     
@@ -132,20 +136,20 @@ def run_generate_brochure(company_name, consolidated_content, tone, detected_lan
     write_brochure(brochure_content, formats, suffix="_original")
 
     #########################################################################
-    #                 PASO 6 - TRADUCCIÓN AUTOMÁTICA             #
+    #                 PASO 6 - TRADUCCIÓN AUTOMÁTICA                        #
     #########################################################################
     # Si el idioma destino es diferente al origen, traducimos
     if brochure_content and target_language != detected_lang:
-        logger.info(f"\nPASO 6: Traduciendo folleto a {target_language}...")
+        logger.info(f"\nPASO 6: Traduciendo folleto a {target_language} con {model_translator}...")
         translated_content = brochure.translate_brochure(
             brochure_text=brochure_content,
             target_language=target_language,
-            model="gpt-4o-mini"
+            model=model_translator # Modelo dinámico
         )
         # Guardar traducido
         write_brochure(translated_content, formats, suffix=f"_{target_language}")
     else:
-        logger.info(f"\nPASO 6: Omitiendo traducción debido a que el idioma de la web es la misma que el lenguaje introducido")
+        logger.info(f"\nPASO 6: Omitiendo traducción debido a que el idioma de la web es el mismo que el lenguaje introducido")
     
 
 def main():
@@ -154,10 +158,16 @@ def main():
     openai_client = OpenAIClient()
     
     company_name = args_manager.get('company')
+    # Usar valor por defecto si no viene
     test_url = args_manager.get('url')
     tone = args_manager.get('tone')
     formats = args_manager.get('format')
     target_language = args_manager.get('language')
+    
+    # Modelos (TAREA 9)
+    model_selector = args_manager.get('model_selector')
+    model_writer = args_manager.get('model_writer')
+    model_translator = args_manager.get('model_translator')
     
     if not target_language:
         target_language = "es"  # Idioma por defecto
@@ -173,20 +183,22 @@ def main():
     logger.info(f"\nEmpresa: {company_name}")
     logger.info(f"URL a analizar: {test_url}")
     logger.info(f"Tono: {tone}")
-    logger.info(f"Idioma destino: {target_language}\n")
+    logger.info(f"Idioma destino: {target_language}")
+    logger.info(f"Modelos: Sel={model_selector}, Wri={model_writer}, Tra={model_translator}\n")
     
     if openai_client.mock_mode:
         consolidated_content = run_mock_mode(tone)
         detected_lang = "en" # Asumimos inglés para el mock
     else:
-        consolidated_content, detected_lang = run_normal_mode(test_url)       
+        # Pasamos model_selector
+        consolidated_content, detected_lang = run_normal_mode(test_url, model_selector)       
         
     if not consolidated_content:
         logger.error("No se pudo obtener contenido compilado")
         sys.exit(1)
     
-    # Llamamos al flujo de generación y traducción
-    run_generate_brochure(company_name, consolidated_content, tone, detected_lang, target_language, formats)       
+    # Llamamos al flujo con los modelos writer y translator
+    run_generate_brochure(company_name, consolidated_content, tone, detected_lang, target_language, formats, model_writer, model_translator)       
     
     logger.info("\n" + "=" * 60)
     logger.info("Proceso completado")

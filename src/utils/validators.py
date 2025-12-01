@@ -4,9 +4,10 @@ from utils.logger import logger
 
 
 class SelectedLink(BaseModel):
-    type: str = Field(..., description="Tipo de enlace")
+    type: str = Field(..., description="Tipo de enlace (ej: about, careers)")
     url: str = Field(..., description="URL del enlace")
-
+    score: int = Field(..., description="Puntuación de relevancia (0-100)", ge=0, le=100)
+    rationale: str = Field(..., description="Justificación breve de por qué es relevante")
 
 class SelectedLinksResponse(BaseModel):
     links: List[SelectedLink] = Field(default_factory=list, description="Lista de enlaces seleccionados")
@@ -30,15 +31,20 @@ def validate_selected_links(data):
         logger.error(f"Error de validacion JSON: {e}")
         logger.warning("Intentando recuperar datos parciales...")
         
-        # Intentar recuperar lo que se pueda
         if isinstance(data, dict) and "links" in data:
             valid_links = []
             for link in data["links"]:
                 if isinstance(link, dict) and "type" in link and "url" in link:
-                    valid_links.append(link)
+                    link_data = {
+                        "type": link["type"],
+                        "url": link["url"],
+                        "score": link.get("score", 0),
+                        "rationale": link.get("rationale", "Faltante")
+                    }
+                    valid_links.append(link_data)
             
             if valid_links:
-                logger.info(f"Recuperados {len(valid_links)} enlaces validos")
+                logger.info(f"Recuperados {len(valid_links)} enlaces validos con valores de score/rationale por defecto.")
                 return {"links": valid_links}
         
         logger.error("No se pudo recuperar ningun enlace valido")

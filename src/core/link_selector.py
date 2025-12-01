@@ -40,7 +40,7 @@ class LinkSelector:
                         
                 return data
         except Exception as e:
-            logger.error(f"Error cargando prompts multi-shot desde {file_name}: {e}")
+            logger.error(f"Error cargando prompts multi-shot desde {prompt_filename}: {e}")
             return []
     
     @staticmethod
@@ -97,18 +97,12 @@ class LinkSelector:
             
             # Intentar hasta 3 veces si falla el parseo
             for attempt in range(1, 4):
-                
                 result = self.openai_client.call_openai(
                     messages=messages,
                     model=model,
                     max_tokens=max_tokens,
                     temperature=0.3
                 )
-                
-                # Verificar si call_openai devolvió un error irrecuperable
-                if result.get("response") == "Error irrecuperable":
-                    logger.error("Error irrecuperable de la API en call_openai.")
-                    return {"links": []}
                 
                 response_text = result["response"].strip()
                 
@@ -131,28 +125,29 @@ class LinkSelector:
                         logger.info(f"Enlaces seleccionados: {len(validated_result['links'])}")
                         return validated_result
                     else:
-                        raise ValueError("Validación retornó estructura vacía")
+                        # Esto se lanzará si los campos score/rationale faltan debido a la validación
+                        raise ValueError("Validación retornó estructura vacía o incompleta (faltan score/rationale)")
                     
                 except (json.JSONDecodeError, ValueError) as e:
                     logger.warning(f"Intento {attempt}/3 falló: {e}")
                     
                     if attempt < 3:
                         # Añadir mensaje de corrección para el siguiente intento
-                        messages.append({"role": "assistant", "content": response_text})
+                        messages.append({"role": "assistant", "content": response_text})                        
                         messages.append({
                             "role": "user", 
                             "content": f"""ERROR: Tu respuesta anterior no tiene el formato JSON correcto.
 
-    IMPORTANTE: Debes responder ÚNICAMENTE con un objeto JSON válido con esta estructura exacta:
-    {{
-    "links": [
-        {{"type": "about page", "url": "https://ejemplo.com/about"}},
-        {{"type": "careers page", "url": "https://ejemplo.com/careers"}}
-    ]
-    }}
+IMPORTANTE: Debes responder ÚNICAMENTE con un objeto JSON válido con esta estructura exacta:
+{{
+"links": [
+    {{"type": "about", "url": "https://ejemplo.com/about", "score": 95, "rationale": "Describe la misión de la empresa."}},
+    {{"type": "careers", "url": "https://ejemplo.com/careers", "score": 80, "rationale": "Detalla las oportunidades de trabajo."}}
+]
+}}
 
-    NO incluyas texto adicional, explicaciones, ni bloques de código markdown.
-    Intenta de nuevo con el formato correcto."""
+NO incluyas texto adicional, explicaciones, ni bloques de código markdown.
+Intenta de nuevo con el formato correcto."""
                         })
                         logger.info(f"Reintentando con instrucciones de formato más estrictas...")
                     else:

@@ -13,7 +13,7 @@ def setup_logger(name="brochure_generator", level=logging.INFO):
     
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        datefmt='%Y-%m-%d-%H:%M:%S'
     )
     
     console_handler = logging.StreamHandler(sys.stdout)
@@ -26,7 +26,8 @@ def setup_logger(name="brochure_generator", level=logging.INFO):
     utils_dir = os.path.dirname(current_file)
     src_dir = os.path.dirname(utils_dir)
     project_root = os.path.dirname(src_dir)
-    log_file = os.path.join(project_root, "outputs", f"brochure_{datetime.now().strftime('%Y%m%d')}.log")
+    date = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    log_file = os.path.join(project_root, "outputs", f"{date}.log")
     
     file_handler = logging.FileHandler(log_file, encoding='utf-8')
     file_handler.setLevel(logging.DEBUG)
